@@ -18,6 +18,7 @@ class SqlHelper {
     });
   }
 
+//CREATE DATA
   static Future<int> createDate(String? title, String? desc) async {
     final db = await SqlHelper.db();
     final data = {'title': title, 'desc': desc};
@@ -26,16 +27,19 @@ class SqlHelper {
     return id;
   }
 
+//READ Data or List
   static Future<List<Map<String, dynamic>>> getAllData() async {
     final db = await SqlHelper.db();
     return db.query('data', orderBy: 'id');
   }
 
+//Detail Data
   static Future<List<Map<String, dynamic>>> getSingleByData(int id) async {
     final db = await SqlHelper.db();
     return db.query('data', where: "id = ?", whereArgs: [id], limit: 1);
   }
 
+//Update Data
   static Future<int> updateDate(int id, String title, String? desc) async {
     final db = await SqlHelper.db();
     final data = {
@@ -48,6 +52,7 @@ class SqlHelper {
     return result;
   }
 
+//Delete Data
   static Future<void> deleteData(int id) async {
     final db = await SqlHelper.db();
     try {
