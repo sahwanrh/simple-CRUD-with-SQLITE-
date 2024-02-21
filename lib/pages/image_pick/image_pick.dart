@@ -14,25 +14,35 @@ class ImagePick extends StatefulWidget {
 }
 
 class _ImagePickState extends State<ImagePick> {
-  Future<File>? imageFile;
-  Image? image;
+  late Future<File> imageFile;
+  late Image image;
   ImageDBHelper? imageDb;
-  List<ImageModel?> lists = [];
+  List<ImageModel> lists = [];
   refreshImage() {
     imageDb?.getImage().then((value) {
-      lists.clear();
-      lists.addAll(value);
+      setState(() {
+        lists.clear();
+        lists.addAll(value);
+      });
     });
   }
 
   pickImageFromGallery() {
-    ImagePicker().pickImage(source: ImageSource.gallery).then((imgFile) async {
-      String imgString = Utility.base64String(await imgFile!.readAsBytes());
-      print(imgString);
-      ImageModel imageModel = ImageModel(0, imgString);
-      imageDb!.saveImage(imageModel);
-      refreshImage();
-    });
+    try {
+      if (imageDb != null) {
+        ImagePicker()
+            .pickImage(source: ImageSource.gallery)
+            .then((imgFile) async {
+          String imgString = Utility.base64String(await imgFile!.readAsBytes());
+          print(imgString);
+          ImageModel imageModel = ImageModel(0, imgString);
+          imageDb?.saveImage(imageModel);
+          refreshImage();
+        });
+      }
+    } catch (e) {
+      throw 'ERRORR $e';
+    }
   }
 
   @override
@@ -52,7 +62,7 @@ class _ImagePickState extends State<ImagePick> {
         crossAxisSpacing: 4.0,
         mainAxisSpacing: 4.0,
         children: lists.map((e) {
-          return Utility.imageFromBase64String(e?.name ?? "");
+          return Utility.imageFromBase64String(e.name);
         }).toList(),
       ),
     );
@@ -73,7 +83,11 @@ class _ImagePickState extends State<ImagePick> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[Flexible(child: gridview())],
+          children: <Widget>[
+            Flexible(
+                child:
+                    imageDb == null ? Text('PHOTO TIDAK MUNCUL') : gridview())
+          ],
         ),
       ),
     );

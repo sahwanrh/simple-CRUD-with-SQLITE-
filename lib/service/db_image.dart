@@ -9,7 +9,7 @@ class ImageDBHelper {
   static final ImageDBHelper _instance = ImageDBHelper._instance;
 
   static Database? db;
-  initDb() async {
+  Future<Database> initDb() async {
     Directory docDirectory = await getApplicationCacheDirectory();
     String path = join(docDirectory.path, "image.db");
     var theDB = await openDatabase(path, version: 1,
